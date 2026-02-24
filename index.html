@@ -52,6 +52,7 @@ footer{text-align:center;font-size:12px;color:#777;padding:16px}
       <li>9. Elche</li>
       <li>10. Burgos</li>
     </ol>
+    <p style="font-size:12px;color:#666">Actualizado a 24/02/2026</p>
   </aside>
 
   <!-- NOTICIAS -->
@@ -67,7 +68,8 @@ footer{text-align:center;font-size:12px;color:#777;padding:16px}
 
 <script>
 const apiKey = "7946d32466614bd6872927ca4c3b1661";
-const url = `https://newsapi.org/v2/everything?q="Racing de Ferrol"&language=es&sortBy=publishedAt&pageSize=20&apiKey=${apiKey}`;
+const url = `https://newsapi.org/v2/everything?q="Racing de Ferrol"&language=es&sortBy=publishedAt&pageSize=50&apiKey=${apiKey}`;
+const proxy = "https://api.allorigins.win/get?url=" + encodeURIComponent(url);
 
 fetch(proxy)
 .then(res => res.json())
@@ -76,17 +78,19 @@ fetch(proxy)
   const contenedor = document.getElementById("noticias");
   contenedor.innerHTML = "";
 
+  let count = 0;
   noticias.forEach(n => {
+    if(count >= 8) return; // solo las 8 primeras visibles
     const texto = (n.title + n.description).toLowerCase();
-    ifif(
-  !texto.includes("racing de ferrol") &&
-  !texto.includes("racing club ferrol") &&
-  !texto.includes("racing ferrol") &&
-  !texto.includes("rcf")
-) return;  return;
+    if(
+      !texto.includes("racing de ferrol") &&
+      !texto.includes("racing club ferrol") &&
+      !texto.includes("racing ferrol") &&
+      !texto.includes("rcf")
+    ) return;
 
     const dominio = n.url ? new URL(n.url).hostname : "";
-    const logo = dominio ? `https://logo.clearbit.com/${dominio}` : "";
+    const logo = dominio ? `https://www.google.com/s2/favicons?domain=${dominio}&sz=64` : "";
 
     contenedor.innerHTML += `
       <article>
@@ -99,6 +103,7 @@ fetch(proxy)
         </div>
       </article>
     `;
+    count++;
   });
 })
 .catch(() => {
