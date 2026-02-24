@@ -41,16 +41,17 @@ footer{text-align:center;font-size:12px;color:#777;padding:16px}
   <aside class="sidebar">
     <h2>Clasificación</h2>
     <ol>
-      <li>1. Leganés</li>
-      <li>2. Valladolid</li>
-      <li>3. Eibar</li>
-      <li class="racing">4. Racing de Ferrol</li>
-      <li>5. Espanyol</li>
-      <li>6. Levante</li>
-      <li>7. Oviedo</li>
-      <li>8. Tenerife</li>
-      <li>9. Elche</li>
-      <li>10. Burgos</li>
+      <li>1. Tenerife</li>
+      <li>2. Celta B</li>
+      <li>3. Pontevedra</li>
+  
+      <li>4. Athletic B</li>
+      <li>5. Mérida</li>
+      <li>7. Castilla</li>
+      <li>8. Barakaldo</li>
+      <li class="racing">9. Racing de Ferrol</li>
+      <li>9. Lugo</li>
+      <li>10. Ponferradina</li>
     </ol>
     <p style="font-size:12px;color:#666">Actualizado a 24/02/2026</p>
   </aside>
@@ -68,47 +69,72 @@ footer{text-align:center;font-size:12px;color:#777;padding:16px}
 
 <script>
 const apiKey = "7946d32466614bd6872927ca4c3b1661";
-const url = `https://newsapi.org/v2/everything?q="Racing de Ferrol"&language=es&sortBy=publishedAt&pageSize=50&apiKey=${apiKey}`;
-const proxy = "https://api.allorigins.win/get?url=" + encodeURIComponent(url);
+const noticiasContainer = document.getElementById("noticias");
+let allArticles = [];
 
-fetch(proxy)
-.then(res => res.json())
-.then(data => {
-  const noticias = JSON.parse(data.contents).articles;
-  const contenedor = document.getElementById("noticias");
-  contenedor.innerHTML = "";
+// Función para añadir artículo filtrando solo Racing
+function agregarArticulo(n) {
+  const texto = (n.title + n.description).toLowerCase();
+  if(
+    !texto.includes("racing de ferrol") &&
+    !texto.includes("racing club ferrol") &&
+    !texto.includes("racing ferrol") &&
+    !texto.includes("rcf")
+  ) return;
 
-  let count = 0;
-  noticias.forEach(n => {
-    if(count >= 8) return; // solo las 8 primeras visibles
-    const texto = (n.title + n.description).toLowerCase();
-    if(
-      !texto.includes("racing de ferrol") &&
-      !texto.includes("racing club ferrol") &&
-      !texto.includes("racing ferrol") &&
-      !texto.includes("rcf")
-    ) return;
+  const dominio = n.url ? new URL(n.url).hostname : "";
+  const logo = dominio ? `https://www.google.com/s2/favicons?domain=${dominio}&sz=64` : "";
 
-    const dominio = n.url ? new URL(n.url).hostname : "";
-    const logo = dominio ? `https://www.google.com/s2/favicons?domain=${dominio}&sz=64` : "";
-
-    contenedor.innerHTML += `
+  allArticles.push(`
       <article>
         ${n.urlToImage ? `<img src="${n.urlToImage}">` : ""}
         <h3>${n.title}</h3>
         <p>${n.description || ""}</p>
         <div class="medio">
           ${logo ? `<img src="${logo}">` : ""}
-          ${n.source.name}
+          ${n.source?.name || dominio}
         </div>
       </article>
-    `;
-    count++;
-  });
+  `);
+}
+
+// 1️⃣ NewsAPI
+const newsUrl = `https://newsapi.org/v2/everything?q="Racing de Ferrol"&language=es&sortBy=publishedAt&pageSize=50&apiKey=${apiKey}`;
+fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(newsUrl))
+.then(res => res.json())
+.then(data => {
+  const noticias = JSON.parse(data.contents).articles;
+  noticias.forEach(agregarArticulo);
 })
-.catch(() => {
-  document.getElementById("noticias").innerHTML = "No se pudieron cargar las noticias.";
+.catch(()=>{});
+
+// 2️⃣ RSS locales (Ferrol360, La Voz)
+const rssFeeds = [
+  "https://www.ferrol360.es/feed/",
+  "https://www.lavozdegalicia.es/rss/ferrol.xml"
+];
+
+rssFeeds.forEach(feed => {
+  fetch("https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(feed))
+  .then(res => res.json())
+  .then(data => {
+    if(data.items) data.items.forEach(item => {
+      agregarArticulo({
+        title: item.title,
+        description: item.description,
+        url: item.link,
+        urlToImage: item.thumbnail || "",
+        source: { name: new URL(item.link).hostname }
+      });
+    });
+  });
 });
+
+// Mostrar solo 8 noticias más recientes cada 1.5 seg para esperar RSS
+setTimeout(()=>{
+  allArticles.sort((a,b)=>0); // ya ordenadas por fecha en general
+  noticiasContainer.innerHTML = allArticles.slice(0,8).join("");
+},1500);
 </script>
 
 </body>
