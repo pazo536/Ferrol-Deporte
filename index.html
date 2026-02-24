@@ -1,175 +1,48 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Ferrol Deporte</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Ferrol Deporte - Live Racing</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<meta name="theme-color" content="#0f6b4a">
+<meta name="apple-mobile-web-app-capable" content="yes">
 
-  <!-- Favicon -->
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
+<style>
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f6f5;color:#222;}
+.header-racing{background:linear-gradient(135deg,#0f6b4a,#0a4f37);padding:14px 16px;box-shadow:0 3px 10px rgba(0,0,0,0.3);}
+.header-content{max-width:1200px;margin:auto;display:flex;align-items:center;gap:14px;}
+.logo-racing{height:56px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4));}
+.header-text{display:flex;flex-direction:column;}
+.site-name{color:#fff;font-size:26px;font-weight:900;letter-spacing:2px;text-transform:uppercase;}
+.site-sub{color:#d7efe6;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.header-line{margin-top:10px;height:4px;background:#fff;opacity:0.15;}
+.container{max-width:900px;margin:auto;padding:16px;}
+h2{margin-top:0;color:#0f6b4a;border-bottom:2px solid #0f6b4a;padding-bottom:6px;}
+.marcador,.partido{background:#0f6b4a;color:#fff;font-weight:900;font-size:16px;padding:12px;border-radius:6px;margin-bottom:12px;text-align:center;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
+.marcador.directo,.partido.directo{background:#d32f2f;color:#fff;animation:parpadeo 1.5s infinite;}
+@keyframes parpadeo{0%,100%{opacity:1;}50%{opacity:0.7;}}
+.tabla{width:100%;border-collapse:collapse;margin-bottom:16px;}
+.tabla th, .tabla td{border:1px solid #ccc;padding:8px;text-align:left;}
+.tabla th{background:#0f6b4a;color:#fff;}
+.tabla tr:nth-child(even){background:#f9f9f9;}
+.tr-racing td{background:#0f6b4a;color:#fff;font-weight:700;}
+.noticia{background:#fff;padding:12px;margin-bottom:12px;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);display:flex;align-items:center;gap:10px;}
+.noticia img{height:32px;width:auto;border-radius:4px;}
+.noticia a{color:#0f6b4a;font-weight:700;text-decoration:none;}
+.noticia a:hover{text-decoration:underline;}
+.meta{font-size:12px;color:#666;margin-top:4px;}
+.extracto{font-size:13px;color:#444;margin-top:2px;}
+.redes{list-style:none;padding-left:0;margin-top:16px;}
+.redes li{margin:6px 0;}
+.redes a{text-decoration:none;color:#0f6b4a;font-weight:700;font-size:14px;}
+.redes a:hover{text-decoration:underline;}
 
-  <!-- Modo app -->
-  <meta name="theme-color" content="#0f6b4a">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-
-  <style>
-    body{
-      margin:0;
-      font-family:Arial, Helvetica, sans-serif;
-      background:#f4f6f5;
-      color:#222;
-    }
-
-    /* HEADER */
-    .header-racing{
-      background:linear-gradient(135deg,#0f6b4a,#0a4f37);
-      padding:14px 16px 0 16px;
-      box-shadow:0 3px 10px rgba(0,0,0,0.35);
-    }
-
-    .header-content{
-      max-width:1200px;
-      margin:auto;
-      display:flex;
-      align-items:center;
-      gap:14px;
-    }
-
-    .logo-racing{
-      height:56px;
-      filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4));
-    }
-
-    .header-text{
-      display:flex;
-      flex-direction:column;
-    }
-
-    .site-name{
-      color:#fff;
-      font-size:26px;
-      font-weight:900;
-      letter-spacing:2px;
-      text-transform:uppercase;
-    }
-
-    .site-sub{
-      color:#d7efe6;
-      font-size:13px;
-      font-weight:700;
-      text-transform:uppercase;
-      letter-spacing:1px;
-    }
-
-    .header-line{
-      margin-top:10px;
-      height:4px;
-      background:#ffffff;
-      opacity:0.15;
-    }
-
-    /* CONTENIDO */
-    .container{
-      max-width:900px;
-      margin:auto;
-      padding:16px;
-    }
-
-    h2{
-      margin-top:0;
-      color:#0f6b4a;
-      border-bottom:2px solid #0f6b4a;
-      padding-bottom:6px;
-    }
-
-    /* MARCADOR */
-    .marcador{
-      background:#0f6b4a;
-      color:#fff;
-      font-weight:900;
-      font-size:16px;
-      padding:10px 12px;
-      border-radius:6px;
-      margin-bottom:12px;
-      text-align:center;
-      box-shadow:0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    .marcador.directo{
-      background:#d32f2f;
-      color:#fff;
-      animation: parpadeo 1.5s infinite;
-    }
-
-    @keyframes parpadeo{
-      0%,100%{opacity:1;}
-      50%{opacity:0.7;}
-    }
-
-    /* Animación gol */
-    .gol{
-      animation: golFlash 1s ease-in-out 1;
-      background:#ffd700;
-      color:#000;
-      padding:2px 6px;
-      border-radius:4px;
-    }
-
-    @keyframes golFlash {
-      0%{transform: scale(1); opacity:0.5;}
-      50%{transform: scale(1.3); opacity:1;}
-      100%{transform: scale(1); opacity:1;}
-    }
-
-    /* NOTICIAS */
-    .noticia{
-      background:#fff;
-      padding:12px;
-      margin-bottom:12px;
-      border-radius:6px;
-      box-shadow:0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .noticia a{
-      text-decoration:none;
-      color:#0f6b4a;
-      font-weight:700;
-    }
-
-    .noticia a:hover{
-      text-decoration:underline;
-    }
-
-    .meta{
-      font-size:12px;
-      color:#666;
-      margin-top:4px;
-    }
-
-    /* REDES */
-    .redes{
-      list-style:none;
-      padding-left:0;
-      margin-top:16px;
-    }
-
-    .redes li{
-      margin:6px 0;
-    }
-
-    .redes a{
-      text-decoration:none;
-      color:#0f6b4a;
-      font-weight:700;
-      font-size:14px;
-    }
-
-    .redes a:hover{
-      text-decoration:underline;
-    }
-  </style>
+/* ANIMACION GOL */
+.gol-animado { animation: golFlash 1s ease-in-out 2; background: #ffd700 !important; color: #000 !important; transform: scale(1.05); margin-top:4px; padding:2px 6px; border-radius:4px; }
+@keyframes golFlash { 0%{background:#ffd700;}50%{background:#fff;}100%{background:#ffd700;} }
+</style>
 </head>
-
 <body>
 
 <header class="header-racing">
@@ -184,134 +57,163 @@
 </header>
 
 <div class="container">
+<div id="marcador" class="marcador">⚽ Cargando marcador…</div>
 
-  <!-- MARCADOR DINÁMICO -->
-  <div id="marcador" class="marcador" 
-       data-equipo1="Racing de Ferrol" 
-       data-goles1="0" 
-       data-equipo2="Tenerife" 
-       data-goles2="0" 
-       data-directo="no">
-    ⚽ Próximo partido: Racing de Ferrol 0 - 0 Tenerife
-  </div>
+<h2>Clasificación actual</h2>
+<table class="tabla" id="clasificacion">
+<thead><tr><th>Pos</th><th>Equipo</th></tr></thead>
+<tbody id="clasificacionBody"></tbody>
+</table>
 
-  <h2>Últimas noticias del Racing de Ferrol</h2>
-  <div id="noticias">Cargando noticias…</div>
+<h2>Partidos en directo</h2>
+<div id="partidos">Cargando partidos…</div>
 
-  <h2>Sigue al Racing</h2>
-  <ul class="redes">
-    <li><a href="https://racingclubferrol.net" target="_blank">🌐 Web oficial</a></li>
-    <li><a href="https://twitter.com/RacingFerrol" target="_blank">🐦 X / Twitter</a></li>
-    <li><a href="https://www.instagram.com/racingclubferrol" target="_blank">📸 Instagram</a></li>
-    <li><a href="https://www.facebook.com/RacingClubFerrol" target="_blank">📘 Facebook</a></li>
-    <li><a href="https://www.youtube.com/@RacingClubFerrol" target="_blank">▶️ YouTube</a></li>
-  </ul>
+<h2>Últimas noticias del Racing de Ferrol</h2>
+<div id="noticias">Cargando noticias…</div>
 
+<h2>Sigue al Racing</h2>
+<ul class="redes">
+<li><a href="https://racingclubferrol.net" target="_blank">🌐 Web oficial</a></li>
+<li><a href="https://twitter.com/RacingFerrol" target="_blank">🐦 X / Twitter</a></li>
+<li><a href="https://www.instagram.com/racingclubferrol" target="_blank">📸 Instagram</a></li>
+<li><a href="https://www.facebook.com/RacingClubFerrol" target="_blank">📘 Facebook</a></li>
+<li><a href="https://www.youtube.com/@RacingClubFerrol" target="_blank">▶️ YouTube</a></li>
+</ul>
 </div>
 
 <script>
-const rssFeeds = [
-  "https://www.ferrol360.es/feed/",
-  "https://www.diariodeferrol.com/rss",
-  "https://www.lavozdegalicia.es/rss/ferrol.xml",
-  "https://racingclubferrol.net/feed/"
-];
+// --- CONFIG ---
+const API_KEY = "a4c520820f7d99f2b0037dc66a19da932739db6cf6fffc75dc31978b9a096";
+const TEAM_ID = 126;
+const LEAGUE_ID = 140;
+const SEASON = 2025;
+const marcadorDiv=document.getElementById("marcador");
+const clasificacionBody=document.getElementById("clasificacionBody");
+const partidosDiv=document.getElementById("partidos");
+let marcadoresAnteriores = {};
 
-const noticiasDiv = document.getElementById("noticias");
-let noticias = [];
+// --- MARCADOR ---
+async function actualizarMarcador(){
+try{
+const res=await fetch(`https://v3.football.api-sports.io/fixtures?team=${TEAM_ID}&live=all`,{headers:{"x-apisports-key":API_KEY}});
+const data=await res.json();
+if(data.response.length>0){
+const p=data.response[0].fixture;
+const e=data.response[0].teams;
+const g=data.response[0].goals;
+marcadorDiv.innerHTML=`⚽ EN DIRECTO: ${e.home.name} ${g.home} - ${g.away} ${e.away.name}`;
+marcadorDiv.classList.add("directo");
+}else{
+marcadorDiv.innerHTML="⚽ Próximo partido: Racing de Ferrol 0 - 0 ?";
+marcadorDiv.classList.remove("directo");
+}}catch(e){marcadorDiv.innerHTML="⚽ No se pudo cargar el marcador";}}
 
-function cargarFeed(feed){
-  const url = "https://api.allorigins.win/get?url=" + encodeURIComponent(feed);
-  fetch(url)
-    .then(r => r.json())
-    .then(data => {
-      const xml = (new window.DOMParser()).parseFromString(data.contents,"text/xml");
-      const items = xml.querySelectorAll("item");
+// --- CLASIFICACION ---
+async function actualizarClasificacion(){
+try{
+const res=await fetch(`https://v3.football.api-sports.io/standings?league=${LEAGUE_ID}&season=${SEASON}`,{headers:{"x-apisports-key":API_KEY}});
+const data=await res.json();
+const tabla=data.response[0].league.standings[0];
+clasificacionBody.innerHTML="";
+tabla.forEach((eq,i)=>{
+const tr=document.createElement("tr");
+if(eq.team.name.toLowerCase().includes("racing")) tr.className="tr-racing";
+tr.innerHTML=`<td>${i+1}</td><td>${eq.team.name}</td>`;
+clasificacionBody.appendChild(tr);
+});
+}catch(e){clasificacionBody.innerHTML="<tr><td colspan='2'>No se pudo cargar</td></tr>";}}
 
-      items.forEach(item => {
-        const title = item.querySelector("title")?.textContent || "";
-        const link = item.querySelector("link")?.textContent || "";
-        const desc = item.querySelector("description")?.textContent || "";
-        const pubDate = item.querySelector("pubDate")?.textContent || "";
+// --- PARTIDOS EN DIRECTO CON GOLES ---
+async function actualizarPartidos(){
+try{
+const res=await fetch(`https://v3.football.api-sports.io/fixtures?league=${LEAGUE_ID}&season=${SEASON}&live=all`,{headers:{"x-apisports-key":API_KEY}});
+const data=await res.json();
+partidosDiv.innerHTML="";
+if(data.response.length===0){partidosDiv.innerHTML="No hay partidos en directo"; return;}
 
-        const texto = (title + " " + desc).toLowerCase();
-        if(
-          !texto.includes("racing de ferrol") &&
-          !texto.includes("racing ferrol") &&
-          !texto.includes("racing club ferrol") &&
-          !texto.includes("rcf")
-        ) return;
+const racingPartidos = data.response.filter(f => f.teams.home.name.toLowerCase().includes("racing") || f.teams.away.name.toLowerCase().includes("racing"));
+const otrosPartidos = data.response.filter(f => !racingPartidos.includes(f));
+const todos = [...racingPartidos, ...otrosPartidos];
 
-        noticias.push({title, link, pubDate});
-      });
+todos.forEach(f=>{
+const id=f.fixture.id;
+const home=f.teams.home.name;
+const away=f.teams.away.name;
+const gh=f.goals.home??0;
+const ga=f.goals.away??0;
+const estado=f.fixture.status.short;
+const minuto=f.fixture.status.elapsed??"";
+const marcadorActual=`${gh}-${ga}`;
+const marcadorPrevio=marcadoresAnteriores[id];
 
-      pintarNoticias();
-    })
-    .catch(() => {});
+const div=document.createElement("div");
+div.className="partido";
+if(estado==="LIVE") div.classList.add("directo");
+div.innerHTML=`${home} ${gh} - ${ga} ${away} (${estado}${minuto?` ${minuto}'`:''})`;
+
+// Animación y sonido si cambia marcador
+if(marcadorPrevio && marcadorPrevio!==marcadorActual){
+div.classList.add("gol-animado");
+if(home.toLowerCase().includes("racing") || away.toLowerCase().includes("racing")){
+const audio=new Audio("gol.mp3"); audio.play().catch(()=>{}); 
+if(navigator.vibrate) navigator.vibrate(200);
+}
 }
 
+marcadoresAnteriores[id]=marcadorActual;
+partidosDiv.appendChild(div);
+
+// Mostrar goleadores si API tiene eventos
+if(f.events){f.events.forEach(ev=>{
+if(ev.type==="Goal"){
+const gDiv=document.createElement("div");
+gDiv.className="gol-animado";
+gDiv.innerHTML=`⚽ ${ev.player.name} (${ev.team.name}) ${ev.time.elapsed}'`;
+div.appendChild(gDiv);
+}
+})}
+});
+}catch(e){partidosDiv.innerHTML="No se pudo cargar los partidos";}
+}
+
+// --- NOTICIAS ---
+const feeds=[
+{url:"https://www.ferrol360.es/feed/", logo:"https://www.ferrol360.es/favicon.ico"},
+{url:"https://www.lavozdegalicia.es/rss/ferrol.xml", logo:"https://www.lavozdegalicia.es/favicon.ico"},
+{url:"https://racingclubferrol.net/feed/", logo:"https://racingclubferrol.net/favicon.ico"}];
+const noticiasDiv=document.getElementById("noticias");
+let allNoticias=[];
+function cargarFeed(f){
+fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(f.url)}&api_key=${API_KEY}`).then(r=>r.json()).then(data=>{
+if(data.items){data.items.forEach(item=>{
+const title=item.title||"",link=item.link||"",pubDate=item.pubDate||"",desc=(item.description||"").replace(/<[^>]*>?/gm,'');
+const texto=(title+" "+desc).toLowerCase();
+if(!texto.includes("racing de ferrol")&&!texto.includes("racing ferrol")&&!texto.includes("racing club ferrol")&&!texto.includes("rcf")) return;
+const extracto=desc.length>100?desc.slice(0,100)+"...":desc;
+allNoticias.push({title,link,pubDate,logo:f.logo,extracto});
+})}
+pintarNoticias();
+}).catch(()=>{});
+}
 function pintarNoticias(){
-  noticias.sort((a,b)=> new Date(b.pubDate) - new Date(a.pubDate));
-  noticiasDiv.innerHTML = "";
-
-  noticias.forEach(n => {
-    const div = document.createElement("div");
-    div.className = "noticia";
-    div.innerHTML = `
-      <a href="${n.link}" target="_blank">${n.title}</a>
-      <div class="meta">${n.pubDate}</div>
-    `;
-    noticiasDiv.appendChild(div);
-  });
+allNoticias.sort((a,b)=> new Date(b.pubDate)-new Date(a.pubDate));
+noticiasDiv.innerHTML="";
+allNoticias.forEach(n=>{
+const div=document.createElement("div");
+div.className="noticia";
+div.innerHTML=`<img src="${n.logo}" alt="logo"><div><a href="${n.link}" target="_blank">${n.title}</a><div class="extracto">${n.extracto}</div><div class="meta">${n.pubDate}</div></div>`;
+noticiasDiv.appendChild(div);
+});
 }
+feeds.forEach(cargarFeed);
 
-rssFeeds.forEach(cargarFeed);
-
-/* Auto-refresh cada 10 minutos */
-setInterval(() => {
-  location.reload();
-}, 600000);
-
-/* MARCADOR DINÁMICO Y GOL */
-const marcador = document.getElementById("marcador");
-let golesPrev = {g1: marcador.dataset.goles1, g2: marcador.dataset.goles2};
-
-function actualizarMarcador(){
-  const eq1 = marcador.dataset.equipo1;
-  const eq2 = marcador.dataset.equipo2;
-  const g1 = marcador.dataset.goles1;
-  const g2 = marcador.dataset.goles2;
-  const directo = marcador.dataset.directo;
-
-  let texto = directo === "si" 
-    ? `⚽ EN DIRECTO: ${eq1} ${g1} - ${g2} ${eq2}` 
-    : `⚽ Próximo partido: ${eq1} ${g1} - ${g2} ${eq2}`;
-
-  marcador.innerHTML = texto;
-
-  if(directo==="si"){
-    marcador.classList.add("directo");
-  } else {
-    marcador.classList.remove("directo");
-  }
-
-  // Animación si hay gol
-  if(g1 != golesPrev.g1){
-    destacarGol(eq1, g1, g2);
-  } else if(g2 != golesPrev.g2){
-    destacarGol(eq2, g1, g2);
-  }
-
-  golesPrev = {g1, g2};
-}
-
-function destacarGol(equipo, g1, g2){
-  marcador.innerHTML = `⚽ EN DIRECTO: ${equipo} <span class="gol">${g1}</span> - ${g2} ${marcador.dataset.equipo2}`;
-  setTimeout(() => actualizarMarcador(), 1000);
-}
-
-// Inicializamos marcador
+// --- ACTUALIZACIONES ---
 actualizarMarcador();
+actualizarClasificacion();
+actualizarPartidos();
+setInterval(actualizarMarcador,30000);
+setInterval(actualizarClasificacion,60000);
+setInterval(actualizarPartidos,30000);
 </script>
 
 </body>
