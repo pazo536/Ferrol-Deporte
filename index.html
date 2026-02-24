@@ -3,17 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Racing Club Ferrol - Estilo Marca</title>
+<title>Noticias Racing - Estilo Marca</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 <style>
-body { font-family: system-ui, -apple-system, sans-serif; background:#f5f5f5; color:#111; }
-.resaltado { color:#00AA00; font-weight:bold; }
-.partido, .noticia { padding:12px; margin-bottom:12px; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
-.partido { background:#ffffff; }
-.noticia { background:#ffffff; border:1px solid #ddd; }
-table { width:100%; border-collapse: collapse; }
-th, td { padding:8px; text-align:left; border-bottom:1px solid #ddd; }
-th { background:#eee; }
+  body { font-family: system-ui, -apple-system, sans-serif; background:#f5f5f5; color:#111; }
+  .resaltado { color:#00AA00; font-weight:bold; }
+  .noticia, .partido { background:#ffffff; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); padding:12px; margin-bottom:12px; display:flex; gap:12px; align-items:flex-start; }
+  .noticia img { width:120px; height:80px; object-fit:cover; border-radius:6px; }
+  header h1 { font-family: "Arial Black", Arial, sans-serif; }
+  .marca-n { font-size:2.5rem; color:#006400; display:inline; }
+  table { width:100%; border-collapse: collapse; }
+  th, td { padding:8px; text-align:left; border-bottom:1px solid #ddd; }
+  th { background:#eee; }
+  .en-vivo { color:#FF0000; font-weight:bold; animation: blink 1s infinite; }
+  @keyframes blink { 0%,50%,100% { opacity:1 } 25%,75% { opacity:0 } }
 </style>
 </head>
 <body class="min-h-screen">
@@ -21,16 +25,12 @@ th { background:#eee; }
 <!-- HEADER -->
 <header class="bg-white py-6 shadow">
   <div class="max-w-6xl mx-auto px-4 flex items-center justify-between">
-    <div class="flex items-center gap-4">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Racing_Club_Ferrol_logo.svg/512px-Racing_Club_Ferrol_logo.svg.png" alt="Escudo Racing" class="h-16 w-16">
-      <div>
-        <h1 class="text-3xl font-bold tracking-tight text-gray-900">RACING CLUB FERROL</h1>
-        <p class="text-gray-600 text-sm">Primera Federación • Todo en uno automático</p>
-      </div>
-    </div>
+    <h1 class="text-gray-800 text-3xl font-bold tracking-tight">
+      <span class="marca-n">N</span>oticias Racing
+    </h1>
     <div class="text-right text-xs text-gray-600">
       Actualiza automáticamente cada 30s<br>
-      <span class="resaltado">● EN VIVO</span>
+      <span class="en-vivo">● EN VIVO</span>
     </div>
   </div>
 </header>
@@ -39,7 +39,7 @@ th { background:#eee; }
 
   <!-- NOTICIAS -->
   <section>
-    <h2 class="text-2xl font-bold mb-4">Noticias Racing</h2>
+    <h2 class="text-2xl font-bold mb-4">Últimas noticias</h2>
     <div id="noticias"></div>
   </section>
 
@@ -59,11 +59,11 @@ th { background:#eee; }
 
 <!-- FOOTER -->
 <footer class="bg-white/50 py-6 text-center text-sm text-gray-600">
-  <p>Web creada por nosotros • Hala Racing! 💙⚪</p>
+  <p>Web creada por nosotros • Hala Racing!</p>
 </footer>
 
 <script>
-// Cambia por tu backend que devuelve JSON de clasificación y partidos
+// Backend con API JSON de clasificación, partidos y noticias
 const BACKEND = "https://tu-proyecto.vercel.app";
 
 async function fetchFootball(){
@@ -110,7 +110,16 @@ async function loadAll(){
       const gh = game.goals.home;
       const ga = game.goals.away;
       const clase = /racing/i.test(h+a) ? "resaltado" : "";
-      partidosDiv.innerHTML += `<div class="partido ${clase}">${h} ${gh} - ${ga} ${a}</div>`;
+      let icons = '';
+      if(game.cards){
+        if(game.cards.yellow){
+          icons += ` 🟨${game.cards.yellow}`;
+        }
+        if(game.cards.red){
+          icons += ` 🟥${game.cards.red}`;
+        }
+      }
+      partidosDiv.innerHTML += `<div class="partido ${clase}"><i class="fa-solid fa-futbol"></i> ${h} ${gh} - ${ga} ${a}${icons} <span class="en-vivo">●</span></div>`;
     });
   }
 
@@ -118,7 +127,15 @@ async function loadAll(){
   const noticiasDiv = document.getElementById("noticias");
   noticiasDiv.innerHTML = "";
   news.forEach(n=>{
-    noticiasDiv.innerHTML += `<div class="noticia"><a href="${n.link}" target="_blank" class="text-gray-900 font-semibold">${n.title}</a></div>`;
+    const imgSrc = n.image || "https://via.placeholder.com/120x80?text=Racing";
+    noticiasDiv.innerHTML += `
+      <div class="noticia">
+        <img src="${imgSrc}" alt="Noticia">
+        <div>
+          <a href="${n.link}" target="_blank" class="text-gray-900 font-semibold">${n.title}</a>
+          <p class="text-gray-600 text-sm mt-1">${n.source || ""}</p>
+        </div>
+      </div>`;
   });
 }
 
