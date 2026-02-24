@@ -3,203 +3,234 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Noticias Racing - Profesional</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-body { font-family: 'Roboto', Arial, sans-serif; background:#f5f5f5; color:#111; margin:0; }
+<title>Noticias Racing</title>
 
-/* HEADER PROFESIONAL */
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body {
+  font-family: 'Roboto', Arial, sans-serif;
+  background:#f4f4f4;
+  margin:0;
+  color:#111;
+}
+
+/* ===== HEADER ===== */
 header {
-  position: relative;
-  background: #f8f8f5;
-  padding: 30px 20px;
+  background:#f7f7f2;
+  padding:28px 16px;
   text-align:center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow:0 4px 12px rgba(0,0,0,.1);
 }
 
 header h1 {
-  font-family: 'Oswald', 'Arial Black', sans-serif;
-  text-transform: uppercase;
-  display: inline-block;
+  font-family:'Oswald','Arial Black',sans-serif;
+  text-transform:uppercase;
   margin:0;
 }
 
 .marca-n {
   font-size:5rem;
-  color:white;
-  -webkit-text-stroke:3px #003300;
+  color:#fff;
+  -webkit-text-stroke:3px #0a3b1d;
   font-weight:900;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
 }
 
 .marca-resto {
   font-size:2.8rem;
-  color:white;
-  -webkit-text-stroke:2px #003300;
+  color:#fff;
+  -webkit-text-stroke:2px #0a3b1d;
   font-weight:700;
-  margin-left:5px;
+  margin-left:6px;
 }
 
-/* Tarjetas generales */
+/* ===== TARJETAS ===== */
 .tarjeta {
   background:#fff;
-  border-radius:8px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  border-radius:10px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
   padding:12px;
-  margin-bottom:12px;
   display:flex;
-  gap:16px;
+  gap:14px;
   align-items:center;
-  transition: transform 0.2s;
+  margin-bottom:12px;
 }
-.tarjeta:hover { transform: translateY(-2px); }
 
-.tarjeta img { width:80px; height:80px; object-fit:cover; border-radius:6px; flex-shrink:0; }
+.tarjeta img {
+  width:70px;
+  height:70px;
+  object-fit:contain;
+  flex-shrink:0;
+}
 
-.tarjeta .info { flex-grow:1; }
-.tarjeta a { font-weight:bold; color:#111; text-decoration:none; display:block; }
-.tarjeta p { color:#555; font-size:0.85rem; margin-top:4px; }
+.tarjeta .info {
+  flex:1;
+}
 
-.destacado { border:2px solid #003300; padding:10px; }
+.tarjeta a {
+  font-weight:700;
+  color:#111;
+  text-decoration:none;
+}
+
+.tarjeta p {
+  font-size:.85rem;
+  color:#555;
+}
+
+.destacado {
+  border:2px solid #0a3b1d;
+}
 </style>
 </head>
+
 <body>
 
-<!-- HEADER -->
 <header>
   <h1>
     <span class="marca-n">N</span><span class="marca-resto">oticias Racing</span>
   </h1>
 </header>
 
-<div class="max-w-6xl mx-auto px-4 py-8 space-y-12">
+<main class="max-w-6xl mx-auto px-4 py-8 space-y-12">
 
-  <!-- NOTICIAS -->
-  <section>
-    <h2 class="text-2xl font-bold mb-4">Últimas noticias del Racing</h2>
-    <div id="noticias">Cargando noticias...</div>
-  </section>
+<!-- NOTICIAS -->
+<section>
+  <h2 class="text-2xl font-bold mb-4">Últimas noticias</h2>
+  <div id="noticias">Cargando noticias…</div>
+</section>
 
-  <!-- CLASIFICACIÓN -->
-  <section>
-    <h2 class="text-2xl font-bold mb-4">Clasificación Primera Federación - Grupo 1</h2>
-    <div id="clasificacion">Cargando clasificación...</div>
-  </section>
+<!-- CLASIFICACIÓN -->
+<section>
+  <h2 class="text-2xl font-bold mb-4">Clasificación</h2>
+  <div id="clasificacion">Cargando clasificación…</div>
+</section>
 
-  <!-- PARTIDOS -->
-  <section>
-    <h2 class="text-2xl font-bold mb-4">Próximos partidos / Marcador en vivo</h2>
-    <div id="partidos">Cargando partidos...</div>
-  </section>
+<!-- PARTIDOS -->
+<section>
+  <h2 class="text-2xl font-bold mb-4">Partidos</h2>
+  <div id="partidos">Cargando partidos…</div>
+</section>
 
-</div>
+</main>
 
 <script>
-// -------------------- NOTICIAS --------------------
+/* =========================
+   CONFIGURACIÓN
+========================= */
+const API_KEY = "a4c520820f7d99f2b0037dc66a19da932739db6a16cf6fffc75dc31978b9a096";
+const RACING_ID = 728; // Racing Club Ferrol en api-football
+const LEAGUE_ID = 435; // Primera Federación
+const SEASON = 2024;
+
+/* =========================
+   NOTICIAS (RSS)
+========================= */
 const FEEDS = [
   "https://www.ferrol360.es/feed/",
   "https://www.lavozdegalicia.es/rss/ferrol.xml",
   "https://e00-marca.uecdn.es/rss/futbol/primera-rfef.xml"
 ];
+
 const KEYWORDS = ["Racing de Ferrol","Racing Club Ferrol","Racing Ferrol"];
 
 async function loadNews() {
-  const noticiasDiv = document.getElementById("noticias");
-  noticiasDiv.innerHTML = "Cargando noticias...";
-  let allItems = [];
-  try {
-    for (const feed of FEEDS) {
-      const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed)}`);
-      const data = await res.json();
-      allItems = allItems.concat(data.items);
-    }
-    allItems = allItems.filter(item => KEYWORDS.some(k => (item.title||"").includes(k) || (item.description||"").includes(k)));
-    allItems.sort((a,b) => new Date(b.pubDate) - new Date(a.pubDate));
+  const box = document.getElementById("noticias");
+  box.innerHTML = "";
 
-    noticiasDiv.innerHTML = "";
-    allItems.slice(0,10).forEach(item => {
-      const imgSrc = item.enclosure?.link || item.thumbnail || "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Racing_Club_Ferrol_logo.svg/512px-Racing_Club_Ferrol_logo.svg.png";
-      noticiasDiv.innerHTML += `
-        <div class="tarjeta ${item.title.includes("Racing") ? "destacado" : ""}">
-          <img src="${imgSrc}" alt="Noticia Racing">
-          <div class="info">
-            <a href="${item.link}" target="_blank">${item.title}</a>
-            <p>${item.pubDate ? new Date(item.pubDate).toLocaleDateString() : ''}</p>
-          </div>
-        </div>
-      `;
-    });
-    if(allItems.length === 0) noticiasDiv.innerHTML = "No hay noticias recientes del Racing de Ferrol.";
-  } catch(e){
-    console.error(e);
-    noticiasDiv.innerText = "No se pudieron cargar las noticias.";
+  let items = [];
+
+  for (const feed of FEEDS) {
+    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed)}`);
+    const data = await res.json();
+    items = items.concat(data.items || []);
   }
+
+  items = items.filter(i =>
+    KEYWORDS.some(k =>
+      (i.title||"").includes(k) || (i.description||"").includes(k)
+    )
+  );
+
+  items.sort((a,b)=>new Date(b.pubDate)-new Date(a.pubDate));
+
+  items.slice(0,10).forEach(n => {
+    const img = n.enclosure?.link || n.thumbnail ||
+      "https://upload.wikimedia.org/wikipedia/commons/0/0f/Racing_Club_Ferrol_logo.svg";
+
+    box.innerHTML += `
+      <div class="tarjeta destacado">
+        <img src="${img}">
+        <div class="info">
+          <a href="${n.link}" target="_blank">${n.title}</a>
+          <p>${new Date(n.pubDate).toLocaleDateString()}</p>
+        </div>
+      </div>`;
+  });
 }
 
-// -------------------- CLASIFICACIÓN --------------------
+/* =========================
+   CLASIFICACIÓN
+========================= */
 async function loadClasificacion() {
-  const clasDiv = document.getElementById("clasificacion");
-  clasDiv.innerHTML = "Cargando clasificación...";
-  try {
-    const res = await fetch("https://api.football-data.org/v4/competitions/PRF/standings", {
-      headers: { "X-Auth-Token": "TU_API_KEY_FOOTBALLDATA" } // necesitas tu token
-    });
-    const data = await res.json();
-    const tabla = data.standings[0].table;
-    clasDiv.innerHTML = "";
-    tabla.forEach(team => {
-      clasDiv.innerHTML += `
-        <div class="tarjeta ${team.team.name.includes("Racing") ? "destacado" : ""}">
-          <img src="${team.team.crest || 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Racing_Club_Ferrol_logo.svg/512px-Racing_Club_Ferrol_logo.svg.png'}" alt="${team.team.name}">
-          <div class="info">
-            <a href="#">${team.position}. ${team.team.name}</a>
-            <p>Puntos: ${team.points} | GD: ${team.goalDifference}</p>
-          </div>
+  const box = document.getElementById("clasificacion");
+  box.innerHTML = "";
+
+  const res = await fetch(
+    `https://v3.football.api-sports.io/standings?league=${LEAGUE_ID}&season=${SEASON}`,
+    { headers:{ "x-apisports-key": API_KEY } }
+  );
+  const data = await res.json();
+  const table = data.response[0].league.standings[0];
+
+  table.forEach(t => {
+    const racing = t.team.id === RACING_ID;
+    box.innerHTML += `
+      <div class="tarjeta ${racing?'destacado':''}">
+        <img src="${t.team.logo}">
+        <div class="info">
+          <strong>${t.rank}. ${t.team.name}</strong>
+          <p>${t.points} pts · DG ${t.goalsDiff}</p>
         </div>
-      `;
-    });
-  } catch(e){
-    console.error(e);
-    clasDiv.innerText = "No se pudo cargar la clasificación.";
-  }
+      </div>`;
+  });
 }
 
-// -------------------- PARTIDOS --------------------
+/* =========================
+   PARTIDOS
+========================= */
 async function loadPartidos() {
-  const partidosDiv = document.getElementById("partidos");
-  partidosDiv.innerHTML = "Cargando partidos...";
-  try {
-    const res = await fetch("https://api.football-data.org/v4/competitions/PRF/matches?status=SCHEDULED,LIVE", {
-      headers: { "X-Auth-Token": "TU_API_KEY_FOOTBALLDATA" }
-    });
-    const data = await res.json();
-    partidosDiv.innerHTML = "";
-    data.matches.forEach(match => {
-      const isRacing = match.homeTeam.name.includes("Racing") || match.awayTeam.name.includes("Racing");
-      partidosDiv.innerHTML += `
-        <div class="tarjeta ${isRacing ? "destacado" : ""}">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Racing_Club_Ferrol_logo.svg/512px-Racing_Club_Ferrol_logo.svg.png" alt="Equipo">
-          <div class="info">
-            <a href="#">${match.homeTeam.name} vs ${match.awayTeam.name}</a>
-            <p>Estado: ${match.status} | Minuto: ${match.minute || '-'}</p>
-          </div>
+  const box = document.getElementById("partidos");
+  box.innerHTML = "";
+
+  const res = await fetch(
+    `https://v3.football.api-sports.io/fixtures?team=${RACING_ID}&season=${SEASON}`,
+    { headers:{ "x-apisports-key": API_KEY } }
+  );
+  const data = await res.json();
+
+  data.response.slice(0,5).forEach(m => {
+    box.innerHTML += `
+      <div class="tarjeta destacado">
+        <img src="${m.teams.home.logo}">
+        <div class="info">
+          <strong>${m.teams.home.name} ${m.goals.home ?? "-"} – ${m.goals.away ?? "-"} ${m.teams.away.name}</strong>
+          <p>${new Date(m.fixture.date).toLocaleString()}</p>
         </div>
-      `;
-    });
-    if(data.matches.length === 0) partidosDiv.innerHTML = "No hay partidos próximos.";
-  } catch(e){
-    console.error(e);
-    partidosDiv.innerText = "No se pudieron cargar los partidos.";
-  }
+      </div>`;
+  });
 }
 
-// -------------------- Inicialización --------------------
+/* =========================
+   INIT
+========================= */
 loadNews();
 loadClasificacion();
 loadPartidos();
-setInterval(loadNews, 30000);
-setInterval(loadClasificacion, 60000);
-setInterval(loadPartidos, 60000);
+
+setInterval(loadNews,30000);
+setInterval(loadClasificacion,60000);
+setInterval(loadPartidos,60000);
 </script>
 
 </body>
