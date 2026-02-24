@@ -3,33 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Noticias Racing - Estilo Marca / All Star</title>
+<title>Noticias Racing - Estilo All Star</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 <style>
   body { font-family: system-ui, -apple-system, sans-serif; background:#f5f5f5; color:#111; }
-  header h1 { font-family: "Impact", "Arial Black", sans-serif; text-transform: uppercase; }
+  
+  /* HEADER */
+  header h1 { font-family: "Impact", "Arial Black", sans-serif; text-transform: uppercase; letter-spacing: -2px; }
   .marca-n { 
-    font-size:4rem; 
+    font-size:4.5rem; 
     color:white; 
-    -webkit-text-stroke: 4px #004500; /* ribete verde oscuro */ 
+    -webkit-text-stroke: 3px #004500; /* ribete verde oscuro */ 
     font-weight: 900;
   }
   .marca-resto { 
-    font-size:2.5rem; 
+    font-size:2.8rem; 
     color:white; 
     -webkit-text-stroke: 2px #004500; 
     font-weight: 800;
   }
+
+  /* NOTICIAS */
   .noticia { 
     background:#ffffff; 
     border-radius:8px; 
     box-shadow:0 2px 6px rgba(0,0,0,0.1); 
     padding:12px; 
     margin-bottom:12px; 
-    display:flex; gap:12px; align-items:flex-start; 
+    display:flex; 
+    gap:16px; 
+    align-items:flex-start; 
+    transition: transform 0.2s; 
   }
-  .noticia img { width:120px; height:80px; object-fit:cover; border-radius:6px; }
+  .noticia:hover { transform: translateY(-2px); }
+  .noticia img { width:160px; height:90px; object-fit:cover; border-radius:6px; flex-shrink:0; }
+
+  /* EN VIVO */
+  .en-vivo { color:#FF0000; font-weight:bold; animation: blink 1s infinite; }
+  @keyframes blink { 0%,50%,100% { opacity:1 } 25%,75% { opacity:0 } }
+
 </style>
 </head>
 <body class="min-h-screen">
@@ -65,7 +78,9 @@ async function loadNews(){
     const noticiasDiv = document.getElementById("noticias");
     noticiasDiv.innerHTML = "";
     data.items.forEach(item => {
-      const imgSrc = item.enclosure?.link || "https://via.placeholder.com/120x80?text=Racing";
+      const imgSrc = item.enclosure?.link 
+                     || item.thumbnail 
+                     || "https://via.placeholder.com/160x90?text=Racing";
       noticiasDiv.innerHTML += `
         <div class="noticia">
           <img src="${imgSrc}" alt="Noticia">
