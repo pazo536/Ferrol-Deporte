@@ -3,22 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Noticias Racing - Estilo Marca</title>
+<title>Noticias Racing - Estilo Marca / All Star</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 <style>
   body { font-family: system-ui, -apple-system, sans-serif; background:#f5f5f5; color:#111; }
-  .resaltado { color:#00AA00; font-weight:bold; }
-  .noticia, .partido { background:#ffffff; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); padding:12px; margin-bottom:12px; display:flex; gap:12px; align-items:flex-start; }
+  header h1 { font-family: "Impact", "Arial Black", sans-serif; text-transform: uppercase; }
+  .marca-n { 
+    font-size:4rem; 
+    color:white; 
+    -webkit-text-stroke: 4px #004500; /* ribete verde oscuro */ 
+    font-weight: 900;
+  }
+  .marca-resto { 
+    font-size:2.5rem; 
+    color:white; 
+    -webkit-text-stroke: 2px #004500; 
+    font-weight: 800;
+  }
+  .noticia { 
+    background:#ffffff; 
+    border-radius:8px; 
+    box-shadow:0 2px 6px rgba(0,0,0,0.1); 
+    padding:12px; 
+    margin-bottom:12px; 
+    display:flex; gap:12px; align-items:flex-start; 
+  }
   .noticia img { width:120px; height:80px; object-fit:cover; border-radius:6px; }
-  header h1 { font-family: "Arial Black", Arial, sans-serif; text-transform:uppercase; }
-  .marca-n { font-size:4rem; color:#00AA00; -webkit-text-stroke:2px white; display:inline; }
-  .marca-resto { font-size:2.2rem; color:#00AA00; -webkit-text-stroke:1px white; display:inline; }
-  table { width:100%; border-collapse: collapse; }
-  th, td { padding:8px; text-align:left; border-bottom:1px solid #ddd; }
-  th { background:#eee; }
-  .en-vivo { color:#FF0000; font-weight:bold; animation: blink 1s infinite; }
-  @keyframes blink { 0%,50%,100% { opacity:1 } 25%,75% { opacity:0 } }
 </style>
 </head>
 <body class="min-h-screen">
@@ -26,17 +37,13 @@
 <!-- HEADER -->
 <header class="bg-white py-6 shadow">
   <div class="max-w-6xl mx-auto px-4 flex items-center justify-between">
-    <h1 class="tracking-tight">
+    <h1>
       <span class="marca-n">N</span><span class="marca-resto">oticias Racing</span>
     </h1>
-    <div class="text-right text-xs text-gray-600">
-      Actualiza automáticamente cada 30s<br>
-      <span class="en-vivo">● EN VIVO</span>
-    </div>
   </div>
 </header>
 
-<div class="max-w-6xl mx-auto px-4 py-8 space-y-12">
+<div class="max-w-6xl mx-auto px-4 py-8">
 
   <!-- NOTICIAS -->
   <section>
@@ -44,33 +51,16 @@
     <div id="noticias">Cargando noticias...</div>
   </section>
 
-  <!-- CLASIFICACIÓN -->
-  <section>
-    <h2 class="text-2xl font-bold mb-4">Clasificación Primera Federación - Grupo 1</h2>
-    <div id="clasificacion">Cargando clasificación...</div>
-  </section>
-
-  <!-- RESULTADOS EN VIVO -->
-  <section>
-    <h2 class="text-2xl font-bold mb-4">Marcador en directo y próximos partidos</h2>
-    <div id="partidos">Cargando partidos...</div>
-  </section>
-
 </div>
 
-<!-- FOOTER -->
-<footer class="bg-white/50 py-6 text-center text-sm text-gray-600">
-  <p>Web creada por nosotros • Hala Racing!</p>
-</footer>
-
 <script>
-// APIs que me diste
-const API_NEWS = "https://api.rss2json.com/v1/api.json?rss_url=https://news.google.com/rss/search?q=%22Racing+de+Ferrol%22+OR+%22Racing+Club+Ferrol%22&hl=es-ES&gl=ES&ceid=ES:es";
-const API_FOOTBALL = "TU_API_FUTBOL"; // aquí tu endpoint para partidos y clasificación
+// RSS que funciona con CORS
+const RSS_URL = "https://news.google.com/rss/search?q=%22Racing+de+Ferrol%22+OR+%22Racing+Club+Ferrol%22&hl=es-ES&gl=ES&ceid=ES:es";
+const RSS2JSON = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(RSS_URL);
 
 async function loadNews(){
   try {
-    const res = await fetch(API_NEWS);
+    const res = await fetch(RSS2JSON);
     const data = await res.json();
     const noticiasDiv = document.getElementById("noticias");
     noticiasDiv.innerHTML = "";
@@ -92,54 +82,9 @@ async function loadNews(){
   }
 }
 
-async function loadFootball(){
-  try {
-    const res = await fetch(API_FOOTBALL);
-    const data = await res.json();
-
-    // Clasificación
-    const tableDiv = document.getElementById("clasificacion");
-    let tableHTML = "<table><tr><th>Pos</th><th>Equipo</th><th>Puntos</th></tr>";
-    data.standings.forEach((team,i)=>{
-      const clase = /racing/i.test(team.team.name) ? "resaltado" : "";
-      tableHTML += `<tr class="${clase}"><td>${i+1}</td><td>${team.team.name}</td><td>${team.points}</td></tr>`;
-    });
-    tableHTML += "</table>";
-    tableDiv.innerHTML = tableHTML;
-
-    // Partidos
-    const partidosDiv = document.getElementById("partidos");
-    partidosDiv.innerHTML = "";
-    if(data.live.length===0){
-      partidosDiv.innerText = "No hay partidos en vivo";
-    } else {
-      data.live.forEach(game=>{
-        const h = game.teams.home.name;
-        const a = game.teams.away.name;
-        const gh = game.goals.home;
-        const ga = game.goals.away;
-        const clase = /racing/i.test(h+a) ? "resaltado" : "";
-        let icons = '';
-        if(game.cards){
-          if(game.cards.yellow){ icons += ` 🟨${game.cards.yellow}`; }
-          if(game.cards.red){ icons += ` 🟥${game.cards.red}`; }
-        }
-        partidosDiv.innerHTML += `<div class="partido ${clase}"><i class="fa-solid fa-futbol"></i> ${h} ${gh} - ${ga} ${a}${icons} <span class="en-vivo">●</span></div>`;
-      });
-    }
-
-  } catch(e){
-    console.error("Error cargando fútbol:", e);
-    document.getElementById("clasificacion").innerText = "No se pudo cargar la clasificación.";
-    document.getElementById("partidos").innerText = "No se pudieron cargar los partidos.";
-  }
-}
-
 // Carga inicial y actualización cada 30s
 loadNews();
-loadFootball();
 setInterval(loadNews, 30000);
-setInterval(loadFootball, 30000);
 </script>
 
 </body>
