@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ferrol Deporte - Racing en Vivo</title>
+<title>Ferrol Deporte - Racing Dinámico</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-body { font-family: system-ui, -apple-system, sans-serif; background:#0A1F3D; color:white; }
-.resaltado { color: #00FF7F; font-weight: bold; }
-.partido, .noticia { padding:8px; margin-bottom:8px; border-radius:6px; }
-.partido { background:#0f6b4a; color:white; }
-.noticia { border:1px solid #ccc; background:#112B4F; }
+  body { font-family: system-ui, -apple-system, sans-serif; background:#0A1F3D; color:white; }
+  .resaltado { color: #00FF7F; font-weight: bold; }
+  .partido, .noticia { padding:8px; margin-bottom:8px; border-radius:6px; }
+  .partido { background:#0f6b4a; color:white; }
+  .noticia { border:1px solid #ccc; background:#112B4F; }
 </style>
 </head>
 <body class="min-h-screen">
@@ -56,12 +56,12 @@ body { font-family: system-ui, -apple-system, sans-serif; background:#0A1F3D; co
 
 <!-- FOOTER -->
 <footer class="bg-black/50 py-8 text-center text-sm text-gray-400">
-  <p>Web creada por Grok para ti • Hala Racing! 💙⚪</p>
+  <p>Web creada por nosotros • Hala Racing! 💙⚪</p>
 </footer>
 
 <script>
-// Cambia esto por tu backend o feeds válidos
-const BACKEND = "https://tu-proyecto.vercel.app"; 
+// Aquí va tu backend o API que devuelve JSON de clasificación y partidos
+const BACKEND = "https://tu-proyecto.vercel.app"; // cambia por tu dominio Vercel
 
 async function fetchFootball(){
   try {
