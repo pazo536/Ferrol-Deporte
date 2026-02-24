@@ -79,7 +79,12 @@ fetch(proxy)
 
   noticias.forEach(n => {
     const texto = (n.title + n.description).toLowerCase();
-    if(!texto.includes("racing de ferrol")) return;
+    ifif(
+  !texto.includes("racing de ferrol") &&
+  !texto.includes("racing club ferrol") &&
+  !texto.includes("racing ferrol") &&
+  !texto.includes("rcf")
+) return;  return;
 
     const dominio = n.url ? new URL(n.url).hostname : "";
     const logo = dominio ? `https://logo.clearbit.com/${dominio}` : "";
