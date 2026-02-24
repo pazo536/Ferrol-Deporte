@@ -11,8 +11,9 @@
   .resaltado { color:#00AA00; font-weight:bold; }
   .noticia, .partido { background:#ffffff; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); padding:12px; margin-bottom:12px; display:flex; gap:12px; align-items:flex-start; }
   .noticia img { width:120px; height:80px; object-fit:cover; border-radius:6px; }
-  header h1 { font-family: "Arial Black", Arial, sans-serif; }
-  .marca-n { font-size:2.5rem; color:#006400; display:inline; }
+  header h1 { font-family: "Arial Black", Arial, sans-serif; text-transform:uppercase; }
+  .marca-n { font-size:4rem; color:#00AA00; -webkit-text-stroke:2px white; display:inline; }
+  .marca-resto { font-size:2.2rem; color:#00AA00; -webkit-text-stroke:1px white; display:inline; }
   table { width:100%; border-collapse: collapse; }
   th, td { padding:8px; text-align:left; border-bottom:1px solid #ddd; }
   th { background:#eee; }
@@ -25,8 +26,8 @@
 <!-- HEADER -->
 <header class="bg-white py-6 shadow">
   <div class="max-w-6xl mx-auto px-4 flex items-center justify-between">
-    <h1 class="text-gray-800 text-3xl font-bold tracking-tight">
-      <span class="marca-n">N</span>oticias Racing
+    <h1 class="tracking-tight">
+      <span class="marca-n">N</span><span class="marca-resto">oticias Racing</span>
     </h1>
     <div class="text-right text-xs text-gray-600">
       Actualiza automáticamente cada 30s<br>
@@ -39,20 +40,20 @@
 
   <!-- NOTICIAS -->
   <section>
-    <h2 class="text-2xl font-bold mb-4">Últimas noticias</h2>
-    <div id="noticias"></div>
+    <h2 class="text-2xl font-bold mb-4">Últimas noticias del Racing</h2>
+    <div id="noticias">Cargando noticias...</div>
   </section>
 
   <!-- CLASIFICACIÓN -->
   <section>
     <h2 class="text-2xl font-bold mb-4">Clasificación Primera Federación - Grupo 1</h2>
-    <table id="clasificacion"></table>
+    <div id="clasificacion">Cargando clasificación...</div>
   </section>
 
   <!-- RESULTADOS EN VIVO -->
   <section>
     <h2 class="text-2xl font-bold mb-4">Marcador en directo y próximos partidos</h2>
-    <div id="partidos"></div>
+    <div id="partidos">Cargando partidos...</div>
   </section>
 
 </div>
@@ -63,85 +64,82 @@
 </footer>
 
 <script>
-// Backend con API JSON de clasificación, partidos y noticias
-const BACKEND = "https://tu-proyecto.vercel.app";
+// APIs que me diste
+const API_NEWS = "https://api.rss2json.com/v1/api.json?rss_url=https://news.google.com/rss/search?q=%22Racing+de+Ferrol%22+OR+%22Racing+Club+Ferrol%22&hl=es-ES&gl=ES&ceid=ES:es";
+const API_FOOTBALL = "TU_API_FUTBOL"; // aquí tu endpoint para partidos y clasificación
 
-async function fetchFootball(){
+async function loadNews(){
   try {
-    const res = await fetch(`${BACKEND}/api/football`);
-    return await res.json();
-  } catch(e){
-    console.error("Error fetch football:", e);
-    return {standings:[], live:[]};
-  }
-}
-
-async function fetchNews(){
-  try {
-    const res = await fetch(`${BACKEND}/api/news`);
-    return await res.json();
-  } catch(e){
-    console.error("Error fetch news:", e);
-    return [];
-  }
-}
-
-async function loadAll(){
-  const fb = await fetchFootball();
-  const news = await fetchNews();
-
-  // Clasificación
-  const table = document.getElementById("clasificacion");
-  table.innerHTML = "<tr><th>Pos</th><th>Equipo</th><th>Puntos</th></tr>";
-  fb.standings.forEach((team,i)=>{
-    const clase = /racing/i.test(team.team.name) ? "resaltado" : "";
-    table.innerHTML += `<tr class="${clase}"><td>${i+1}</td><td>${team.team.name}</td><td>${team.points}</td></tr>`;
-  });
-
-  // Partidos
-  const partidosDiv = document.getElementById("partidos");
-  partidosDiv.innerHTML = "";
-  if(fb.live.length===0){
-    partidosDiv.innerText = "No hay partidos en vivo";
-  } else {
-    fb.live.forEach(game=>{
-      const h = game.teams.home.name;
-      const a = game.teams.away.name;
-      const gh = game.goals.home;
-      const ga = game.goals.away;
-      const clase = /racing/i.test(h+a) ? "resaltado" : "";
-      let icons = '';
-      if(game.cards){
-        if(game.cards.yellow){
-          icons += ` 🟨${game.cards.yellow}`;
-        }
-        if(game.cards.red){
-          icons += ` 🟥${game.cards.red}`;
-        }
-      }
-      partidosDiv.innerHTML += `<div class="partido ${clase}"><i class="fa-solid fa-futbol"></i> ${h} ${gh} - ${ga} ${a}${icons} <span class="en-vivo">●</span></div>`;
-    });
-  }
-
-  // Noticias
-  const noticiasDiv = document.getElementById("noticias");
-  noticiasDiv.innerHTML = "";
-  news.forEach(n=>{
-    const imgSrc = n.image || "https://via.placeholder.com/120x80?text=Racing";
-    noticiasDiv.innerHTML += `
-      <div class="noticia">
-        <img src="${imgSrc}" alt="Noticia">
-        <div>
-          <a href="${n.link}" target="_blank" class="text-gray-900 font-semibold">${n.title}</a>
-          <p class="text-gray-600 text-sm mt-1">${n.source || ""}</p>
+    const res = await fetch(API_NEWS);
+    const data = await res.json();
+    const noticiasDiv = document.getElementById("noticias");
+    noticiasDiv.innerHTML = "";
+    data.items.forEach(item => {
+      const imgSrc = item.enclosure?.link || "https://via.placeholder.com/120x80?text=Racing";
+      noticiasDiv.innerHTML += `
+        <div class="noticia">
+          <img src="${imgSrc}" alt="Noticia">
+          <div>
+            <a href="${item.link}" target="_blank" class="text-gray-900 font-semibold">${item.title}</a>
+            <p class="text-gray-600 text-sm mt-1">${item.pubDate ? new Date(item.pubDate).toLocaleDateString() : ''}</p>
+          </div>
         </div>
-      </div>`;
-  });
+      `;
+    });
+  } catch(e){
+    console.error("Error cargando noticias:", e);
+    document.getElementById("noticias").innerText = "No se pudieron cargar las noticias.";
+  }
+}
+
+async function loadFootball(){
+  try {
+    const res = await fetch(API_FOOTBALL);
+    const data = await res.json();
+
+    // Clasificación
+    const tableDiv = document.getElementById("clasificacion");
+    let tableHTML = "<table><tr><th>Pos</th><th>Equipo</th><th>Puntos</th></tr>";
+    data.standings.forEach((team,i)=>{
+      const clase = /racing/i.test(team.team.name) ? "resaltado" : "";
+      tableHTML += `<tr class="${clase}"><td>${i+1}</td><td>${team.team.name}</td><td>${team.points}</td></tr>`;
+    });
+    tableHTML += "</table>";
+    tableDiv.innerHTML = tableHTML;
+
+    // Partidos
+    const partidosDiv = document.getElementById("partidos");
+    partidosDiv.innerHTML = "";
+    if(data.live.length===0){
+      partidosDiv.innerText = "No hay partidos en vivo";
+    } else {
+      data.live.forEach(game=>{
+        const h = game.teams.home.name;
+        const a = game.teams.away.name;
+        const gh = game.goals.home;
+        const ga = game.goals.away;
+        const clase = /racing/i.test(h+a) ? "resaltado" : "";
+        let icons = '';
+        if(game.cards){
+          if(game.cards.yellow){ icons += ` 🟨${game.cards.yellow}`; }
+          if(game.cards.red){ icons += ` 🟥${game.cards.red}`; }
+        }
+        partidosDiv.innerHTML += `<div class="partido ${clase}"><i class="fa-solid fa-futbol"></i> ${h} ${gh} - ${ga} ${a}${icons} <span class="en-vivo">●</span></div>`;
+      });
+    }
+
+  } catch(e){
+    console.error("Error cargando fútbol:", e);
+    document.getElementById("clasificacion").innerText = "No se pudo cargar la clasificación.";
+    document.getElementById("partidos").innerText = "No se pudieron cargar los partidos.";
+  }
 }
 
 // Carga inicial y actualización cada 30s
-loadAll();
-setInterval(loadAll, 30000);
+loadNews();
+loadFootball();
+setInterval(loadNews, 30000);
+setInterval(loadFootball, 30000);
 </script>
 
 </body>
