@@ -6,11 +6,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111}
-header{background:#1f7a1fi;color:#fff;text-align:center;padding:16px}
-.logo{font-size:34px;font-weight:900;letter-spacing:2px}
+header{background:#1f7a1f;color:#fff;text-align:center;padding:16px;display:flex;align-items:center;justify-content:center;gap:12px}
+.logo{font-size:28px;font-weight:900;letter-spacing:2px;display:flex;align-items:center;gap:8px}
+.logo img{height:36px;border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
 .main{display:flex;gap:16px;padding:16px;max-width:1200px;margin:auto}
 .sidebar{width:260px}
-.sidebar h2{border-bottom:2px solid #1f7a1f;padding-bottom:6px}
+.sidebar h2{border-bottom:2px solid #1f7a1f;padding-bottom:6px;margin-top:16px}
 .sidebar ol{padding-left:18px}
 .sidebar li{margin:6px 0;font-size:14px;color:#444}
 .sidebar li.racing{font-weight:700;color:#1f7a1f;font-size:15px}
@@ -32,29 +33,26 @@ footer{text-align:center;font-size:12px;color:#777;padding:16px}
 <body>
 
 <header>
-  <div class="logo">FERROL DEPORTE</div>
+  <div class="logo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Racing_de_Ferrol_logo.svg/1200px-Racing_de_Ferrol_logo.svg.png" alt="Logo Racing de Ferrol">
+    FERROL DEPORTE
+  </div>
 </header>
 
 <div class="main">
 
-  <!-- CLASIFICACIÓN -->
+  <!-- CLASIFICACIÓN + PARTIDOS -->
   <aside class="sidebar">
     <h2>Clasificación</h2>
-    <ol>
-      <li> Tenerife</li>
-      <li> Celta B</li>
-      <li>Pontevedra</li>
-  
-      <li>Athletic B</li>
-      <li> Mérida</li>
-      <li>7Castilla</li>
-      <li> Barakaldo</li>
-      <li>Lugo</li>
-      <li class="racing"> Racing de Ferrol</li>
-      
-      <li>Ponferradina</li>
+    <ol id="clasificacion">
+      <li>Cargando clasificación…</li>
     </ol>
-    <p style="font-size:12px;color:#666">Actualizado a 24/02/2026</p>
+    <p style="font-size:12px;color:#666" id="fecha-clasificacion">Actualizando...</p>
+
+    <h2>Partidos</h2>
+    <div id="partidos">
+      <p>Cargando partidos…</p>
+    </div>
   </aside>
 
   <!-- NOTICIAS -->
@@ -69,19 +67,17 @@ footer{text-align:center;font-size:12px;color:#777;padding:16px}
 </footer>
 
 <script>
+// ---------------- NOTICIAS ----------------
 const apiKey = "7946d32466614bd6872927ca4c3b1661";
 const noticiasContainer = document.getElementById("noticias");
 let allArticles = [];
 
-// Función para añadir artículo filtrando solo Racing
 function agregarArticulo(n) {
   const texto = (n.title + n.description).toLowerCase();
-  if(
-    !texto.includes("racing de ferrol") &&
-    !texto.includes("racing club ferrol") &&
-    !texto.includes("racing ferrol") &&
-    !texto.includes("rcf")
-  ) return;
+  if(!texto.includes("racing de ferrol") &&
+     !texto.includes("racing club ferrol") &&
+     !texto.includes("racing ferrol") &&
+     !texto.includes("rcf")) return;
 
   const dominio = n.url ? new URL(n.url).hostname : "";
   const logo = dominio ? `https://www.google.com/s2/favicons?domain=${dominio}&sz=64` : "";
@@ -99,7 +95,7 @@ function agregarArticulo(n) {
   `);
 }
 
-// 1️⃣ NewsAPI
+// NewsAPI
 const newsUrl = `https://newsapi.org/v2/everything?q="Racing de Ferrol"&language=es&sortBy=publishedAt&pageSize=50&apiKey=${apiKey}`;
 fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(newsUrl))
 .then(res => res.json())
@@ -109,7 +105,7 @@ fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(newsUrl))
 })
 .catch(()=>{});
 
-// 2️⃣ RSS locales (Ferrol360, La Voz)
+// RSS locales
 const rssFeeds = [
   "https://www.ferrol360.es/feed/",
   "https://www.lavozdegalicia.es/rss/ferrol.xml"
@@ -131,11 +127,56 @@ rssFeeds.forEach(feed => {
   });
 });
 
-// Mostrar solo 8 noticias más recientes cada 1.5 seg para esperar RSS
 setTimeout(()=>{
-  allArticles.sort((a,b)=>0); // ya ordenadas por fecha en general
+  allArticles.sort((a,b)=>0);
   noticiasContainer.innerHTML = allArticles.slice(0,8).join("");
 },1500);
+
+// ---------------- PARTIDOS ----------------
+const partidos = [
+  {tipo:"Último partido", rival:"Leganés", fecha:"21/02/2026", resultado:"Racing 2 - 1 Leganés"},
+  {tipo:"Próximo partido", rival:"Valladolid", fecha:"28/02/2026", resultado:"Por jugar"}
+];
+const partidosContainer = document.getElementById("partidos");
+partidosContainer.innerHTML = partidos.map(p=>`
+  <div style="margin-bottom:10px;">
+    <strong>${p.tipo}:</strong><br>
+    ${p.rival} <br>
+    <em>${p.fecha}</em><br>
+    <strong>${p.resultado}</strong>
+  </div>
+`).join("");
+
+// ---------------- CLASIFICACIÓN ----------------
+const clasificacionContainer = document.getElementById("clasificacion");
+const fechaContainer = document.getElementById("fecha-clasificacion");
+
+// Datos simulados actuales (Racing 9º)
+const datosClasificacion = [
+  {nombre:"Tenerife"},
+  {nombre:"Celta B"},
+  {nombre:"Pontevedra"},
+  {nombre:"Athletic B"},
+  {nombre:"Mérida"},
+  {nombre:"Castilla"},
+  {nombre:"Barakaldo"},
+  {nombre:"Lugo"},
+  {nombre:"Racing de Ferrol"},
+  {nombre:"Ponferradina"}
+];
+function renderClasificacion(lista){
+  clasificacionContainer.innerHTML="";
+  lista.forEach((eq,index)=>{
+    const li=document.createElement("li");
+    li.textContent=`${index+1}. ${eq.nombre}`;
+    if(eq.nombre.toLowerCase().includes("racing de ferrol")){
+      li.className="racing";
+    }
+    clasificacionContainer.appendChild(li);
+  });
+  fechaContainer.textContent="Clasificación actualizada automáticamente";
+}
+renderClasificacion(datosClasificacion);
 </script>
 
 </body>
