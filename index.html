@@ -9,24 +9,28 @@ body, h1,h2,h3,p,ol,li { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'Arial Black', Arial, sans-serif; background:#fff; color:#000; }
 a { text-decoration:none; color:inherit; }
 header { display:flex; justify-content:center; align-items:center; padding:1rem; background:#228B22; }
-.logo { font-size:2.5rem; font-weight:bold; color:#ffd700; padding:0.2rem 0.5rem; border-radius:5px; text-shadow:0 0 5px gold; animation:brillo 2s infinite alternate; }
-@keyframes brillo {0%{text-shadow:0 0 5px gold,0 0 10px gold;}50%{text-shadow:0 0 10px gold,0 0 20px gold;}100%{text-shadow:0 0 5px gold,0 0 10px gold;}}
+.logo { font-size:2.5rem; font-weight:bold; color:#fff; padding:0.2rem 0.5rem; border-radius:5px; text-shadow:0 0 3px #000; }
 .main { display:flex; gap:1rem; margin:1rem; flex-wrap:wrap; }
-.sidebar { width:240px; background:#f0f0f0; padding:1rem; border-radius:6px; box-shadow:0 1px 6px rgba(0,0,0,0.1); height:max-content; }
+.sidebar { width:240px; background:#f0f0f0; padding:1rem; border-radius:6px; box-shadow:0 1px 6px rgba(0,0,0,0.1); height:max-content; animation:fadeIn 1s; }
 .sidebar h2 { margin-top:0; font-size:18px; border-bottom:1px solid #ccc; padding-bottom:0.5rem; color:#000; }
 .sidebar ol { margin:0; padding-left:20px; }
 .sidebar li { margin:0.5rem 0; font-size:14px; opacity:0.6; transition:all 0.3s; cursor:pointer; }
 .sidebar li:hover { opacity:1; transform:scale(1.02); }
 .sidebar li.racing { font-weight:bold; color:#228B22; font-size:16px; opacity:1; animation:parpadeo 1.5s ease-in-out 0s 3; }
 @keyframes parpadeo {0%,100%{opacity:1;}25%,75%{opacity:0.2;}50%{opacity:1;}}
+@keyframes fadeIn {0%{opacity:0;}100%{opacity:1;}}
 .listado { flex:1; display:grid; grid-template-columns:1fr; gap:1rem; }
-.listado article { background:#f9f9f9; padding:1rem; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.1); cursor:pointer; display:flex; flex-direction:column; }
+.listado article { background:#f9f9f9; padding:1rem; border-radius:6px; box-shadow:0 1px 6px rgba(0,0,0,0.1); cursor:pointer; display:flex; flex-direction:column; animation:fadeIn 1s; transition:transform 0.3s; }
+.listado article:hover { transform:scale(1.03); box-shadow:0 4px 10px rgba(0,0,0,0.2); }
 .listado h3 { margin:0 0 0.5rem 0; font-size:16px; color:#000;}
 .listado p { margin:0 0 0.5rem 0; font-size:14px; color:#333; }
-.listado .medio { font-size:12px; color:#555; display:flex; align-items:center; gap:4px; margin-top:auto; }
-.listado .medio img { height:16px; width:16px; border-radius:2px; object-fit:cover; }
-.listado img.noticia { width:100%; height:150px; object-fit:cover; border-radius:6px; margin-bottom:0.5rem; }
+.listado .medio { font-size:12px; color:#555; display:flex; align-items:center; gap:6px; margin-top:auto; }
+.listado .medio img { height:20px; width:20px; border-radius:3px; object-fit:cover; }
+.listado img.noticia { width:100%; height:180px; object-fit:cover; border-radius:6px; margin-bottom:0.5rem; }
+.partidos-vivos { background:#f0f0f0; padding:1rem; border-radius:6px; margin-bottom:1rem; box-shadow:0 1px 6px rgba(0,0,0,0.1);}
+.partidos-vivos div { margin-bottom:0.5rem; font-size:14px; }
 footer { text-align:center; padding:1rem; color:#555; font-size:12px; }
+@media(max-width:768px){ .main { flex-direction:column; } .sidebar { width:100%; } }
 </style>
 </head>
 <body>
@@ -36,19 +40,21 @@ footer { text-align:center; padding:1rem; color:#555; font-size:12px; }
 <div class="main">
   <aside class="sidebar">
     <h2>Clasificación</h2>
-    <ol>
-      <!-- Se llenará con JS -->
-    </ol>
+    <ol id="clasificacion"></ol>
   </aside>
-  <section class="listado">
-    <!-- Noticias se llenarán con JS -->
+  <section style="flex:1;">
+    <section class="partidos-vivos">
+      <h2>Partidos en vivo</h2>
+      <div id="partidosVivos">Cargando...</div>
+    </section>
+    <section class="listado"></section>
   </section>
 </div>
 <footer>Ferrol Deporte &copy; 2026</footer>
 
 <script>
-// --- Noticias Racing de Ferrol con logo ---
-const newsAPI = `https://newsapi.org/v2/everything?q=Racing%20de%20Ferrol&language=es&pageSize=5&apiKey=7946d32466614bd6872927ca4c3b1661`;
+// --- Noticias Racing de Ferrol con logo real ---
+const newsAPI = `https://newsapi.org/v2/everything?q="Racing de Ferrol"&language=es&pageSize=5&sortBy=publishedAt&apiKey=7946d32466614bd6872927ca4c3b1661`;
 const proxyNews = `https://api.allorigins.win/get?url=${encodeURIComponent(newsAPI)}`;
 
 async function cargarNoticias(){
@@ -58,15 +64,18 @@ async function cargarNoticias(){
     const noticias = JSON.parse(data.contents).articles;
     const listado = document.querySelector('.listado');
     listado.innerHTML = '';
+
     noticias.forEach(noticia=>{
+      const texto = (noticia.title + noticia.description).toLowerCase();
+      if(!texto.includes("racing de ferrol")) return;
+      const logoUrl = noticia.url ? `https://logo.clearbit.com/${new URL(noticia.url).hostname}` : 'https://via.placeholder.com/20';
       const art = document.createElement('article');
-      // Solo 1 imagen
       art.innerHTML = `
-        <img src="${noticia.urlToImage||'https://via.placeholder.com/400x200'}" class="noticia"/>
+        <img src="${noticia.urlToImage || 'https://via.placeholder.com/400x200'}" class="noticia"/>
         <h3>${noticia.title}</h3>
-        <p>${noticia.description||''}</p>
+        <p>${noticia.description || ''}</p>
         <div class="medio">
-          <img src="https://via.placeholder.com/16"/> ${noticia.source.name}
+          <img src="${logoUrl}" alt="${noticia.source.name}"/> ${noticia.source.name}
         </div>
       `;
       listado.appendChild(art);
@@ -75,20 +84,15 @@ async function cargarNoticias(){
 }
 cargarNoticias();
 
-// --- Clasificación Racing de Ferrol ---
-const apiFutbol = `https://v3.football.api-sports.io/standings?season=2025&league=280`;
-const proxyFutbol = `https://api.allorigins.win/get?url=${encodeURIComponent(apiFutbol)}`;
-
-async function cargarClasificacion(){
-  try{
-    const res = await fetch(proxyFutbol,{
-      headers: { "X-RapidAPI-Key": "1569c47c3b3119876a3cc85a6b7c9157" }
-    });
+// --- Clasificación Racing de Ferrol desde proxy dinámico ---
+async function cargarClasificacionAPI(){
+  try {
+    const res = await fetch("https://tu-proxy.vercel.app/api/clasificacion");
     const data = await res.json();
-    const tabla = JSON.parse(data.contents).response[0].league.standings[0];
-    const ol = document.querySelector('.sidebar ol');
+    const standings = data.response[0].league.standings[0]; 
+    const ol = document.getElementById('clasificacion');
     ol.innerHTML = '';
-    tabla.forEach(team=>{
+    standings.forEach(team=>{
       const li = document.createElement('li');
       li.textContent = `${team.rank}. ${team.team.name}`;
       if(team.team.name.toLowerCase().includes('racing de ferrol')){
@@ -96,9 +100,34 @@ async function cargarClasificacion(){
       }
       ol.appendChild(li);
     });
-  }catch(err){console.error('Error clasificación:',err);}
+  } catch(err){console.error('Error clasificación API:', err);}
 }
-cargarClasificacion();
+cargarClasificacionAPI();
+
+// --- Partidos en vivo Racing de Ferrol ---
+async function cargarPartidosEnVivo(){
+  try{
+    const res = await fetch("https://tu-proxy.vercel.app/api/live");
+    const data = await res.json();
+    const container = document.getElementById("partidosVivos");
+    container.innerHTML = '';
+    data.response.forEach(fixture=>{
+      const local = fixture.teams.home.name;
+      const visitante = fixture.teams.away.name;
+      const marcador = `${fixture.goals.home} - ${fixture.goals.away}`;
+      const estado = fixture.fixture.status.short;
+      const div = document.createElement('div');
+      div.innerHTML = `<strong>${local} vs ${visitante}</strong> | ${marcador} | ${estado}`;
+      if(local.toLowerCase().includes("racing de ferrol") || visitante.toLowerCase().includes("racing de ferrol")){
+        div.style.color = "#228B22";
+        div.style.fontWeight = "bold";
+      }
+      container.appendChild(div);
+    });
+  }catch(err){console.error("Error partidos en vivo:",err);}
+}
+cargarPartidosEnVivo();
+setInterval(cargarPartidosEnVivo, 30000);
 </script>
 </body>
 </html>
