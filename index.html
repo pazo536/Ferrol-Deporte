@@ -16,8 +16,9 @@ header {
   text-align:center;
 }
 
+/* HEADER con Comic Sans */
 header h1 {
-  font-family: "Impact", "Arial Black", sans-serif;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
   text-transform: uppercase;
   display: inline-block;
   position: relative;
@@ -26,7 +27,7 @@ header h1 {
 .marca-n {
   font-size:5rem;
   color:white;
-  -webkit-text-stroke:3px #003300; /* verde mucho más oscuro */
+  -webkit-text-stroke:3px #003300; /* verde oscuro */
   font-weight:900;
   animation: shine 2s infinite linear;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
@@ -89,17 +90,30 @@ header h1 {
 </div>
 
 <script>
-// RSS y fallback seguro para imágenes
-const RSS_URL = "https://news.google.com/rss/search?q=%22Racing+de+Ferrol%22+OR+%22Racing+Club+Ferrol%22&hl=es-ES&gl=ES&ceid=ES:es";
-const RSS2JSON = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(RSS_URL);
+// Feeds fiables con imágenes
+const FEEDS = [
+  "https://www.ferrol360.es/feed/",
+  "https://www.lavozdegalicia.es/rss/ferrol.xml",
+  "https://e00-marca.uecdn.es/rss/futbol/primera-rfef.xml"
+];
 
-async function loadNews(){
+async function loadNews() {
+  const noticiasDiv = document.getElementById("noticias");
+  noticiasDiv.innerHTML = "Cargando noticias...";
+  let allItems = [];
+
   try {
-    const res = await fetch(RSS2JSON);
-    const data = await res.json();
-    const noticiasDiv = document.getElementById("noticias");
+    for (const feed of FEEDS) {
+      const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed)}`);
+      const data = await res.json();
+      allItems = allItems.concat(data.items);
+    }
+
+    // Ordenar por fecha descendente
+    allItems.sort((a,b) => new Date(b.pubDate) - new Date(a.pubDate));
+
     noticiasDiv.innerHTML = "";
-    data.items.forEach(item => {
+    allItems.slice(0,10).forEach(item => {
       const imgSrc = item.enclosure?.link 
                      || item.thumbnail 
                      || "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Racing_Club_Ferrol_logo.svg/512px-Racing_Club_Ferrol_logo.svg.png";
@@ -115,11 +129,11 @@ async function loadNews(){
     });
   } catch(e){
     console.error("Error cargando noticias:", e);
-    document.getElementById("noticias").innerText = "No se pudieron cargar las noticias.";
+    noticiasDiv.innerText = "No se pudieron cargar las noticias.";
   }
 }
 
-// Carga inicial y actualización cada 30s
+// Carga inicial y cada 30s
 loadNews();
 setInterval(loadNews, 30000);
 </script>
